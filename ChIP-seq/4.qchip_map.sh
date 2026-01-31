@@ -1,3 +1,4 @@
+### map sequencing reads to combined human hg38 and drosophila dm6 genome.
 #!/bin/bash
 if [[ ! -d "1.trim" ]]; then
         mkdir 1.trim
@@ -51,3 +52,33 @@ for file in *_R1_001.fastq.gz; do
     rm -f "$r1_file" "$r2_file"
 done
         
+
+### get the read number in each file.
+
+# Input directory containing BAM files
+bam_dir="./"
+output_csv="mapped_reads_summary.csv"
+
+# Create or overwrite the CSV header
+echo "BAM File,Total Mapped Reads" > $output_csv
+
+# Loop through each BAM file in the directory
+for bam_file in "$bam_dir"/*.bam; do
+  # Get the prefix of the BAM file
+  prefix=$(basename "$bam_file" .UniqMapped_sorted_rmdup.bam)
+
+  # Generate index using samtools
+  samtools index -@ 48 "$bam_file"
+
+  # Run idxstats and calculate total mapped reads
+  samtools idxstats "$bam_file" > "${prefix}_idxstats.txt"
+  total_reads=$(awk '{sum += $3} END {print sum}' "${prefix}_idxstats.txt")
+
+  # Append the result to the CSV file
+  echo "${prefix},${total_reads}" >> $output_csv
+
+  # Optional: Clean up the idxstats file if no longer needed
+  # rm "${prefix}_idxstats.txt"
+done
+
+echo "Processing complete. Results saved to $output_csv"
