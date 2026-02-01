@@ -40,7 +40,7 @@ Scripts for ChIP-seq preprocessing, quantitative spike-in normalization, peak an
 ### Workflow overview
 
 1. Annotate ChIP-seq peaks by genomic context  
-2. Embed multi-factor ChIP-seq signals using UMAP  
+2. Embed, cluster and visualize multi-factor ChIP-seq signals using UMAP  
 3. Compute differential ChIP-seq signal matrices  
 4. Map reads to hg38 + dm6 genome for spike-in normalization  
 5. Downsample hg38 reads based on dm6 spike-in levels  
