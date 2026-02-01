@@ -302,6 +302,14 @@ Quantifies loop strength changes between conditions and classifies loop categori
 
 ---
 
+## RNA-seq
+
+Bulk RNA-seq analysis associated with this study was performed following the workflow described in the repository below:
+
+https://github.com/boxialaboratory/Tail-Loss-Shawn-RNA-seq/tree/main/05_bulk_RNA_seq
+
+---
+
 ## Citation
 
 If you use this code, please cite the associated manuscript:
