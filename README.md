@@ -7,15 +7,6 @@ The code is organized by data modality and follows a **numeric execution order**
 ---
 
 
-## General notes
-
-- Scripts are **not a one-click pipeline**
-- Paths and parameters are expected to be adjusted to local environments
-- Numeric prefixes indicate **recommended execution order**
-- Scripts were written for **analysis reproducibility**, not general-purpose packaging
-
----
-
 ## ChIP-seq
 
 Scripts for ChIP-seq preprocessing, quantitative spike-in normalization, peak annotation, and feature embedding.
