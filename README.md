@@ -1,8 +1,6 @@
 # 3D-genome-ZJ
 
-This repository contains analysis scripts used for **ChIP-seq and Micro-C data processing and visualization** in this study.
-
-The code is organized by data modality and follows a **numeric execution order** within each directory.
+This repository contains analysis scripts used for **ChIP-seq, Micro-C and RNA-seq data analyzing and visualization** used in High-throughput in silico screen uncovers key regulators(ZNF654 and JMJD6) of 3D genome architecture (Bai _et al._, 2025).
 
 ---
 
