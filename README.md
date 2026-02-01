@@ -111,21 +111,24 @@ Maps ChIP-seq reads to a **concatenated hg38 + dm6 genome** for spike-in normali
 
 Downsamples hg38-aligned reads using externally computed spike-in normalization factors and generates coverage tracks.
 
-##### Spike-in downsampling calculation
+Spike-in downsampling calculation
 
-For each pairwise comparison (e.g. sample A vs sample B), Drosophila dm6–aligned reads were used as an internal reference.  
+For each pairwise comparison (e.g. sample A vs sample B), Drosophila dm6–aligned reads were used as an internal reference.
 The sample with the lower dm6 spike-in count was used as the normalization baseline, and human (hg38) reads in the other sample were downsampled accordingly.
 
-\[
-\mathrm{hg38}_{\mathrm{downsampled}} =
-\frac{\min(\mathrm{dm6}_A,\ \mathrm{dm6}_B)}{\mathrm{dm6}_{\mathrm{sample}}}
-\times \mathrm{hg38}_{\mathrm{sample}}
-\]
+Downsampling formula:
+
+hg38_downsampled =
+min(dm6_A, dm6_B) / dm6_sample × hg38_sample
+
 
 where:
 
-- \(\mathrm{dm6}_A\), \(\mathrm{dm6}_B\) are the numbers of dm6-aligned reads in samples A and B  
-- \(\mathrm{hg38}_{\mathrm{sample}}\) is the number of hg38-aligned reads in the corresponding sample  
+dm6_A, dm6_B are the numbers of dm6-aligned reads in samples A and B
+
+dm6_sample is the number of dm6-aligned reads in the sample being scaled
+
+hg38_sample is the number of hg38-aligned reads in the corresponding sample
 
 The resulting scaling factor is calculated externally (e.g. in Excel) and manually provided to this script.
 
