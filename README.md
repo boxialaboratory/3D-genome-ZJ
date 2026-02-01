@@ -6,28 +6,6 @@ The code is organized by data modality and follows a **numeric execution order**
 
 ---
 
-## Repository structure
-
-3D-genome-ZJ/
-├── ChIP-seq/
-│ ├── 1.annotated_peak_distribution_barplot.py
-│ ├── 2.UMAP.py
-│ ├── 3.draw_diff.py
-│ ├── 4.qchip_map.sh
-│ └── 5.qchip_downsample.py
-├── MicroC/
-│ ├── 1.get_stat.py
-│ ├── 2.remove_unmapped.py
-│ ├── 3.stripe_calling_zscore_norm.py
-│ ├── 4.plot_microc_diff_map.py
-│ ├── 5.APA_for_pairwise_chip_peak.py
-│ ├── 6.microC_visualization_with_ChIP_tracks.py
-│ ├── 8.call_merge_loop.sh
-│ └── 9.plot_up_down_loops.py
-└── README.md
-
-
----
 
 ## General notes
 
