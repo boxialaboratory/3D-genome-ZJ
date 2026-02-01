@@ -1,39 +1,70 @@
-ChIP-seq analysis
+ChIP-seq
 
-This directory contains scripts used for ChIP-seq preprocessing, spike-in normalization, peak annotation, and feature embedding, as used in the study.
+This directory contains scripts used for ChIP-seq preprocessing, quantitative spike-in normalization, peak annotation, and feature embedding, as used in this study.
 
-The workflow is organized in a fixed execution order, indicated by the numeric prefixes of each script.
+Scripts are intended to be executed in numeric order.
+
+Requirements
+
+Core dependencies used by the scripts in this directory:
+
+Trim Galore ≥ 0.6
+
+Bowtie2 ≥ 2.4
+
+samtools ≥ 1.13
+
+sambamba ≥ 0.8
+
+deepTools ≥ 3.5
+
+MACS2 ≥ 2.2
+
+bedtools ≥ 2.27
+
+Python ≥ 3.8
+
+pandas
+
+numpy
+
+matplotlib
+
+seaborn
+
+pyBigWig
+
+scanpy / anndata
 
 Workflow overview
 
-Annotate ChIP-seq peaks by genomic context
+Peak genomic annotation and summary
 
-Embed multi-factor ChIP-seq signals using UMAP
+Multi-factor ChIP-seq signal embedding (UMAP)
 
-Compute and visualize differential ChIP-seq signal matrices
+Differential signal heatmap visualization
 
-Map reads to combined hg38 + dm6 genome for spike-in normalization
+Spike-in aware read mapping (hg38 + dm6)
 
-Downsample hg38 reads based on dm6 spike-in counts (scaling factors computed externally)
+Spike-in–normalized downsampling and track generation
 
 Scripts
 1.annotated_peak_distribution_barplot.py
 
-Purpose
-Annotate ChIP-seq peaks by genomic category and visualize their distribution.
+Annotates ChIP-seq peaks by genomic context and visualizes their distribution.
 
 Input
 
-Annotated BED file containing overlapping genomic features
+Annotated BED file (feature overlaps)
 
-Peak BED file (e.g. filtered ChIP-seq peaks)
+Peak BED file
 
 Method
 
-Assigns each peak to a single genomic category using a priority rule
-(CTCF > TSS > enhancer > CDS > UTR > intron > intergenic)
+Each peak is assigned to a single category using a priority rule:
+CTCF > TSS > Enhancer > CDS > 5′UTR > 3′UTR > Intron > Intergenic
 
-Generates a single stacked horizontal bar plot showing peak distribution
+Outputs a stacked horizontal bar plot
 
 Output
 
@@ -41,8 +72,7 @@ region_overlap_stacked_bar_ordered.pdf
 
 2.UMAP.py
 
-Purpose
-Embed ChIP-seq signal patterns across multiple factors into a low-dimensional space.
+Embeds ChIP-seq and ATAC-seq signal patterns across merged peaks.
 
 Input
 
@@ -52,37 +82,36 @@ Multiple ChIP-seq / ATAC-seq / insulation bigWig tracks
 
 Method
 
-Extracts mean signal per peak from each bigWig file
+Mean signal extraction per peak (pyBigWig)
 
-Log-transform and z-score normalize signals
+log1p + z-score normalization
 
-Performs PCA, neighbor graph construction, UMAP embedding, and Leiden clustering
+PCA → UMAP → Leiden clustering
 
 Output
 
-UMAP plots colored by cluster or ChIP-seq signal
+UMAP plots colored by factor enrichment
 
-Table of UMAP coordinates and cluster labels
+UMAP coordinates and cluster labels
 (*_adata_cell_cluster_umap.bed)
 
 3.draw_diff.py
 
-Purpose
-Compute and visualize differential ChIP-seq signal matrices between two conditions.
+Computes and visualizes differential ChIP-seq signal matrices between two conditions.
 
 Input
 
-Two gzipped matrix files (e.g. WT vs KO), sharing region identifiers
+Two gzipped matrices with shared region identifiers (e.g. WT vs KO)
 
 Method
 
 Aligns matrices by genomic coordinates
 
-Computes log₂(KO / WT) difference
+Computes log₂(KO / WT)
 
-Uses multi-threading for matrix computation
+Multi-threaded computation
 
-Plots a rasterized heatmap optimized for large PDFs
+Rasterized heatmap rendering for large matrices
 
 Output
 
@@ -90,99 +119,45 @@ Differential heatmap PDF
 
 4.qchip_map.sh
 
-Purpose
-Map ChIP-seq reads to a combined hg38 + dm6 reference genome for spike-in normalization.
-
-Input
-
-Paired-end FASTQ files
+Maps ChIP-seq reads to a concatenated hg38 + dm6 genome for spike-in normalization.
 
 Method
 
-Adapter trimming using Trim Galore
+Adapter trimming (Trim Galore)
 
-Alignment to merged hg38–dm6 genome using Bowtie2
+Alignment to merged genome (Bowtie2)
 
-Removal of duplicates
+Removal of secondary alignments and duplicates
 
-Separation of uniquely mapped hg38 and dm6 reads
+Separation of hg38 and dm6 reads
 
-Counting mapped reads per BAM file
+Read counting per BAM file
 
 Output
 
 hg38- and dm6-specific BAM files
 
-mapped_reads_summary.csv containing total mapped reads
+mapped_reads_summary.csv
 
 5.qchip_downsample.py
 
-Purpose
-Downsample hg38-aligned ChIP-seq reads using precomputed scaling factors and generate bigWig tracks.
+Downsamples hg38-aligned reads using precomputed spike-in scaling factors and generates coverage tracks.
 
-Important note
-Downsampling fractions are not computed in this script.
-They are calculated externally (e.g. in Excel) according to the spike-in normalization formula described in the Methods section.
-
-Spike-in normalization formula
-
-For a pairwise comparison (A vs B):
-
-Downsampled hg38 reads
-=
-min
-⁡
-(
-dm6
-𝐴
-,
-dm6
-𝐵
-)
-dm6
-sample
-×
-hg38
-sample
-Downsampled hg38 reads=
-dm6
-sample
-	​
-
-min(dm6
-A
-	​
-
-,dm6
-B
-	​
-
-)
-	​
-
-×hg38
-sample
-	​
-
-
-where:
-
-dm6 = number of dm6-aligned reads
-
-hg38 = number of hg38-aligned reads
-
-The resulting fraction is then manually inserted into this script.
+Important
+Downsampling fractions are computed externally (e.g. Excel), using dm6 spike-in read counts as described in the Methods.
 
 Method
 
-Downsamples BAM files using sambamba view
+Random downsampling with sambamba view
 
-Indexes downsampled BAMs
+BAM indexing
 
-Generates CPM-normalized bigWig files using bamCoverage
+bigWig generation using bamCoverage
+
+No CPM/RPKM normalization applied
 
 Output
 
 Downsampled BAM files
 
-hg38 bigWig tracks for downstream analysis
+hg38 bigWig tracks for quantitative analysis
